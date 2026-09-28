@@ -1,8 +1,8 @@
 {
-  "name": "leather-goddesses-of-phobos",
+  "name": "leather-goddesses-of-phobos-typescript",
   "private": true,
   "version": "0.1.0",
-  "description": "A browser-native port of Infocom's Leather Goddesses of Phobos (1986), with a TypeScript Z-machine engine and a modern UI.",
+  "description": "Infocom's Leather Goddesses of Phobos (1986), ported from its original ZIL source to TypeScript, with a modern browser interface.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,12 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "play": "tsx tools/play.ts"
+    "play": "tsx tools/play.ts",
+    "walk": "tsx tools/walk.ts",
+    "translate": "tsx tools/zil2ts/main.ts",
+    "verify:dictionary": "tsx tools/verify/dictionary.ts",
+    "verify:syntax": "tsx tools/verify/syntax.ts",
+    "verify:objects": "tsx tools/verify/objects.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

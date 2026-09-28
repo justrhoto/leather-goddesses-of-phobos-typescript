@@ -340,8 +340,8 @@ function openSlotDialog(kind: "save" | "restore"): void {
   $("slot-title").textContent = saving ? "Save the game" : "Restore a saved game";
   $("slot-note").textContent = saving
     ? "Name this save, or pick one to replace."
-    : "Pick the save to go back to.";
-  $("slot-ok").textContent = saving ? "Save" : "Restore";
+    : "Choose the save to go back to.";
+  $("slot-ok").hidden = !saving; // when restoring, choosing a save is the action
   slotInput.hidden = !saving;
   slotInput.value = saving ? defaultSaveName() : "";
   const list = $<HTMLUListElement>("slot-list");
@@ -358,6 +358,7 @@ function openSlotDialog(kind: "save" | "restore"): void {
     const pick = document.createElement("button");
     pick.type = "button";
     pick.className = "pick";
+    pick.disabled = !saving && slot.game.version !== BUILD_VERSION;
     pick.append(saveInfo(name, slot.game));
     pick.addEventListener("click", () => {
       if (saving) slotInput.value = name;
