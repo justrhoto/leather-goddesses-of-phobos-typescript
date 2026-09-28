@@ -587,12 +587,12 @@ ${verbs.join("\n")}
 ]);
 
 /** The routine that carries out each action. */
-export const ACTIONS = actionTable("ACTIONS", [
+export const ACTIONS = actionTable("ACTIONS", ${vocab.actions.size}, [
 ${actions.join("\n")}
 ]);
 
 /** Routines run before an action's own handlers get a chance. */
-export const PREACTIONS = actionTable("PREACTIONS", [
+export const PREACTIONS = actionTable("PREACTIONS", ${vocab.actions.size}, [
 ${pre.join("\n")}
 ]);
 

@@ -111,8 +111,22 @@ export function put(t: any, i: number, v: any): true {
   return true;
 }
 
+/**
+ * Bytes of the original story file that the game can read through a stray
+ * numeric address. When the parser merges an orphaned command whose new input
+ * has no verb, it treats header word 0 (768) as a dictionary entry and reads
+ * its "parts of speech" at 772-774; in the original these bytes marked it as an
+ * adjective. Any other such read is reported as an error.
+ */
+const STRAY_MEMORY = new Map<number, number>([[772, 41], [773, 0], [774, 0]]);
+
 export function getb(t: any, i: number): any {
   if (t instanceof Word) return t.getByte(i);
+  if (typeof t === "number" && t !== 0) {
+    const v = STRAY_MEMORY.get(t + i);
+    if (v === undefined) throw new Error(`GETB of unknown memory address ${t + i}`);
+    return v;
+  }
   const x = tbl(t, "GETB");
   return x.buf.getByte(x.off + i);
 }
@@ -310,5 +324,17 @@ export function dirout(_stream: number): true {
   return true;
 }
 export function dirin(_stream: number): true {
+  return true;
+}
+
+/**
+ * Names a pseudo-object after a dictionary word. The original copied the
+ * word's encoded text over the object's short name, so it prints the word as
+ * the dictionary stored it (at most six letters).
+ */
+export function setPseudoName(o: any, w: any): true {
+  const obj = asObj(o, "setPseudoName");
+  if (!obj || !(w instanceof Word)) throw new Error("setPseudoName needs an object and a word");
+  obj.desc = w.text;
   return true;
 }

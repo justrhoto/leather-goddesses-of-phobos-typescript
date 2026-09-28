@@ -6,7 +6,7 @@
 
 import {
   D, T, TR, apply, back, btst, clearFlag, crlf, div, eq, first, get, getb, getp, getpt, hasFlag, isIn,
-  loc, next, printb, printc, printd, ptsize, put, putb, putp, read, rest, setFlag, tell,
+  loc, next, printb, printc, printd, ptsize, put, putb, putp, read, rest, setFlag, setPseudoName, tell,
 } from "../engine/runtime.ts";
 import {
   byte, itable, table,
@@ -310,7 +310,7 @@ export function parser(): any {
           put(P_VTBL, 0, wrd);
           putb(P_VTBL, 2, getb(P_LEXV, cnt = ptr * 2 + 2));
           putb(P_VTBL, 3, getb(P_LEXV, cnt + 1));
-        } else if ((val = isWt(wrd, PS.PREPOSITION, 0)) || (eq(wrd, W.ALL, W.ONE, W.BOTH) || eq(wrd, W.EVERYT) || isWt(wrd, PS.ADJECTIVE) || isWt(wrd, PS.OBJECT)) && (val = 0)) {
+        } else if ((val = isWt(wrd, PS.PREPOSITION, 0)) || (eq(wrd, W.ALL, W.ONE, W.BOTH) || eq(wrd, W.EVERYT) || isWt(wrd, PS.ADJECTIVE) || isWt(wrd, PS.OBJECT)) && (val = 0, true)) {
           if (val && eq(wrd, W.BACK) && !eq(verb, ACT.HAND)) {
             val = 0;
           }
@@ -776,7 +776,7 @@ export function clauseWin(adj: any = false): any {
     put(P_CCTBL, CC_OCLAUSE, P_OCL2);
   }
   clauseCopy(P_OTBL, P_OTBL, adj);
-  !eq(get(P_OTBL, P_NC2), 0) && (G.pNcn = 2);
+  !eq(get(P_OTBL, P_NC2), 0) && (G.pNcn = 2, true);
   G.pAclause = false;
   return true;
 }
@@ -1611,6 +1611,11 @@ export function whichPrint(tlen: any, len: any, tbl: any): any {
   }
 }
 
+/**
+ * GLOBAL-CHECK. The original named the pseudo-object by copying the noun's
+ * encoded dictionary text over the object's short name (<PUT <BACK <GETPT
+ * ,PSEUDO-OBJECT ,P?ACTION> 5> ...>); here that is setPseudoName().
+ */
 export function globalCheck(tbl: any): any {
   let len: any = 0;
   let rmg: any = 0;
@@ -1618,7 +1623,6 @@ export function globalCheck(tbl: any): any {
   let cnt: any = 0;
   let obj: any = 0;
   let obits: any = 0;
-  let foo: any = 0;
   len = get(tbl, P_MATCHLEN);
   obits = G.pSlocbits;
   if (rmg = getpt(G.here, P.GLOBAL)) {
@@ -1641,10 +1645,7 @@ export function globalCheck(tbl: any): any {
       } else if (G.pNam || G.pAdj) {
         G.lastPseudoLoc = G.here;
         putp(PSEUDO_OBJECT, P.ACTION, get(rmg, cnt + 3));
-        foo = back(getpt(PSEUDO_OBJECT, P.ACTION), 5);
-        rmg = get(rmg, cnt + 1);
-        put(foo, 0, get(rmg, 0));
-        put(foo, 1, get(rmg, 1));
+        setPseudoName(PSEUDO_OBJECT, get(rmg, cnt + 1));
         objFound(PSEUDO_OBJECT, tbl);
         break;
       }

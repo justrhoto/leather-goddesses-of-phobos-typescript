@@ -21,7 +21,7 @@ for (const m of fs.readFileSync(`${dir}/x1str.zap`, "latin1").replace(/\r/g, "")
 
 const flagNum = new Map<string, number>();
 for (const [k, v] of Object.entries(world)) if (/BIT$|^INVISIBLE$/.test(k) && typeof v === "number") flagNum.set(k, v);
-const propName = new Map(Object.entries(P).map(([k, v]) => [v, k.replace(/_/g, "-")]));
+const propName = new Map<number, string>(Object.entries(P).map(([k, v]) => [v, k.replace(/_/g, "-")]));
 
 let problems = 0;
 const report = (msg: string) => {

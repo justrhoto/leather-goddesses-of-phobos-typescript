@@ -33,9 +33,9 @@ export function verbsTable(entries: [number, Table][]): Table {
   return table("VERBS", Array.from(items, (x) => x ?? 0));
 }
 
-/** ACTIONS / PREACTIONS: routine per action number. */
-export function actionTable(name: string, entries: [number, Function | 0][]): Table {
-  const items: any[] = [];
+/** ACTIONS / PREACTIONS: routine per action number (0 when there is none). */
+export function actionTable(name: string, count: number, entries: [number, Function | 0][]): Table {
+  const items: any[] = new Array(count + 1).fill(0);
   for (const [v, fn] of entries) items[v] = fn;
   return table(name, Array.from(items, (x) => x ?? 0));
 }

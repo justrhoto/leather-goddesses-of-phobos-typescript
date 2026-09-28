@@ -884,7 +884,7 @@ export const VERBS = verbsTable([
 ]);
 
 /** The routine that carries out each action. */
-export const ACTIONS = actionTable("ACTIONS", [
+export const ACTIONS = actionTable("ACTIONS", 230, [
   [V.VERBOSE, vVerbose],
   [V.BRIEF, vBrief],
   [V.SUPER_BRIEF, vSuperBrief],
@@ -1118,7 +1118,7 @@ export const ACTIONS = actionTable("ACTIONS", [
 ]);
 
 /** Routines run before an action's own handlers get a chance. */
-export const PREACTIONS = actionTable("PREACTIONS", [
+export const PREACTIONS = actionTable("PREACTIONS", 230, [
   [V.PUT_ON, prePut],
   [V.ASK_ABOUT, preSpeak],
   [V.ASK_FOR, preSpeak],

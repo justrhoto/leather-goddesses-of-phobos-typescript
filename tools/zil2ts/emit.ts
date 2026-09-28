@@ -419,7 +419,7 @@ export class RoutineEmitter {
    * value, so non-boolean predicates are captured into a temporary.
    */
   private test(pred: Node, valueMode: Mode | null): string {
-    const e = this.expr(pred);
+    const e = this.predicate(pred);
     this.lastTestValue = null;
     if (!valueMode || isBooleanExpr(pred, this.head(pred))) return stripParens(e.c);
     if (valueMode.k === "assign") {
@@ -433,6 +433,25 @@ export class RoutineEmitter {
 
   // -------------------------------------------------------------------------
   // expressions
+
+  /**
+   * An expression in a test position. ZILCH compiled <SET X constant> there
+   * as a store whose branch the assembler discarded, so it always counted as
+   * true (the parser relies on this for <SET VAL 0>).
+   */
+  private predicate(n: Node): E {
+    const h = this.head(n);
+    if ((h === "SET" || h === "SETG") && n.kind === "form") {
+      const v = n.items[2];
+      const constant = v && (v.kind === "number" || (v.kind === "form" && v.items.length === 0) ||
+        (v.kind === "atom" && v.name === "T"));
+      if (constant) {
+        const set = this.expr(n);
+        return { c: `(${stripParens(set.c)}, true)`, p: P_ATOM };
+      }
+    }
+    return this.expr(n);
+  }
 
   /** Evaluates args left to right, hoisting earlier ones if a later one emits statements. */
   private args(nodes: Node[]): E[] {
@@ -776,7 +795,7 @@ export class RoutineEmitter {
 
   private andOr(h: "AND" | "OR", a: Node[]): E {
     if (a.length === 0) return { c: h === "AND" ? "true" : "false", p: P_ATOM };
-    const parts = a.map((x) => this.capture(() => this.expr(x)));
+    const parts = a.map((x) => this.capture(() => this.predicate(x)));
     const op = h === "AND" ? " && " : " || ";
     const p = h === "AND" ? P_AND : P_OR;
     if (parts.slice(1).every((x) => x.lines.length === 0)) {
