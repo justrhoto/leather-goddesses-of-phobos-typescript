@@ -1,7 +1,7 @@
 // Collects every top-level definition from the ZIL sources into symbol tables.
 import fs from "fs";
 import path from "path";
-import { readZilFile, type Node } from "./reader.ts";
+import { readZilFile, zilStringText, type Node } from "./reader.ts";
 
 export const SOURCE_FILES = [
   "misc", "parser", "syntax", "verbs", "globals", "earth", "mars", "venus", "cleveland", "spaceship", "phobos",
@@ -56,7 +56,7 @@ export interface Program {
 function atomName(n: Node | undefined): string {
   if (!n) throw new Error("expected atom, got nothing");
   if (n.kind === "atom") return n.name;
-  if (n.kind === "string") return n.value;
+  if (n.kind === "string") return zilStringText(n.value);
   throw new Error(`expected atom at line ${n.line}, got ${n.kind}`);
 }
 
