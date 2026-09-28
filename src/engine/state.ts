@@ -6,6 +6,7 @@ import { allObjects, ZObject } from "./object.ts";
 import { allBuffers, Table } from "./table.ts";
 import { Word, dictionary } from "./vocab.ts";
 import type { Rng } from "./rng.ts";
+import { GlobalRef } from "./globalref.ts";
 
 export interface Snapshot {
   objs: Int32Array; // per object: parent, sibling, child, flags
@@ -89,6 +90,7 @@ function encodeValue(v: any): any {
   if (v instanceof Word) return { $w: v.key };
   if (v instanceof Table) return { $t: v.buf.id, o: v.off };
   if (v === emptyString) return { $e: 1 };
+  if (v instanceof GlobalRef) return { $g: v.name };
   if (typeof v === "function") {
     const name = namesByRoutine.get(v);
     if (!name) throw new Error("cannot save an unregistered routine");
@@ -107,6 +109,7 @@ function decodeValue(v: any): any {
   }
   if ("$t" in v) return new Table(allBuffers[v.$t], v.o);
   if ("$e" in v) return emptyString;
+  if ("$g" in v) return new GlobalRef(v.$g);
   if ("$f" in v) {
     const fn = routinesByName.get(v.$f);
     if (!fn) throw new Error(`unknown routine in save: ${v.$f}`);

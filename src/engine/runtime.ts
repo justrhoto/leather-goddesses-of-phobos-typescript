@@ -65,10 +65,8 @@ export function prob(n: number): boolean {
   return !(n < random(100));
 }
 
-/** A reference to a global variable, as stored in a conditional exit. */
-export class GlobalRef {
-  constructor(readonly name: string) {}
-}
+import { GlobalRef } from "./globalref.ts";
+export { GlobalRef };
 
 let globals: Record<string, any> = {};
 export function setGlobalsForValue(g: Record<string, any>): void {
