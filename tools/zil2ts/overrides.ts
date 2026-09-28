@@ -121,6 +121,33 @@ export function vFill(): any {
     ],
   },
 
+  "SCRAP-OF-PAPER-F": {
+    comment: `/**
+ * SCRAP-OF-PAPER-F. Release 59 was built from an earlier version of the paper:
+ * it had no action routine, and READ printed its TEXT property (the matrix,
+ * then CR). So READ only shows the matrix when the paper is the direct object
+ * ("read trent with paper" is refused by V-READ), and the matrix ends with CR.
+ * The source's fixed-pitch switch is kept so the browser prints the grid in a
+ * monospaced font; it does not change the text.
+ */`,
+    code: `
+export function scrapOfPaperF(): any {
+  if (verbIs(V.READ) && prsoIs(SCRAP_OF_PAPER)) {
+    tell("There's a seemingly meaningless matrix of letters on the paper:\\n");
+    put(HEADER, 8, get(HEADER, 8) | 2);
+    tell("   HESOHREBBUR\\n   ILSSSIPNGEF\\n   RGIUGHTHDEN\\n   SNKOOBENOHP\\n   FALYTMERATP\\n   SHEADLIGHTO\\n   SLLABNOTTOC");
+    put(HEADER, 8, get(HEADER, 8) & -3);
+    tell("\\n");
+    return true;
+  }
+  return false;
+}`,
+    imports: [
+      { module: RT, name: "tell" }, { module: RT, name: "get" }, { module: RT, name: "put" }, { module: RT, name: "HEADER" },
+      { module: W, name: "V" }, { module: W, name: "SCRAP_OF_PAPER" }, { module: W, name: "verbIs" }, { module: W, name: "prsoIs" },
+    ],
+  },
+
   "CLEAR-SCREEN": {
     comment: "/** CLEAR-SCREEN: the original scrolled 24 blank lines; the browser clears the story view. */",
     code: `

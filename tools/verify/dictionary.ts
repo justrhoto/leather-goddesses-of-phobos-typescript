@@ -1,15 +1,22 @@
-// Compares the port's dictionary with the original story file's dictionary.
+// Compares the port's dictionary with the dictionary of the original story
+// file ($STORY_FILE): the same words, with the same parts of speech.
 import fs from "fs";
 import { createGame } from "../../src/game/index.ts";
 import { dictionary } from "../../src/engine/vocab.ts";
 import { dictKey } from "../../src/engine/zchars.ts";
+import { ZM } from "./zmachine.ts";
+
 createGame({ write: () => true, read: () => null }, 1);
-const lines = fs.readFileSync(process.env.REF_DIR + "/dict.txt", "utf8").trim().split("\n").slice(1);
+const zm = new ZM(new Uint8Array(fs.readFileSync(process.env.STORY_FILE!)), 1);
+const m = zm.m;
+const d = zm.w(8);
+const nsep = m[d];
+const entryLength = m[d + 1 + nsep];
+const count = zm.w(d + 2 + nsep);
 const orig = new Map<string, number>();
-for (const l of lines) {
-  const m = /^\S+ (".*") ([01]{8}) (\d+) (\d+)$/.exec(l)!;
+for (let i = 0, p = d + 4 + nsep; i < count; i++, p += entryLength) {
   // ZILCH used a different alphabet code for "-" (it decodes as ":" with the standard table).
-  orig.set(dictKey(JSON.parse(m[1]).replace(/:/g, "-")), parseInt(m[2], 2));
+  orig.set(dictKey(zm.zstr(p).s.replace(/:/g, "-")), m[p + 4]);
 }
 let bad = 0;
 for (const [k, ps] of orig) {

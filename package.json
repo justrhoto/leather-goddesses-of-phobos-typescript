@@ -15,7 +15,8 @@
     "translate": "tsx tools/zil2ts/main.ts",
     "verify:dictionary": "tsx tools/verify/dictionary.ts",
     "verify:syntax": "tsx tools/verify/syntax.ts",
-    "verify:objects": "tsx tools/verify/objects.ts"
+    "verify:objects": "tsx tools/verify/objects.ts",
+    "verify:original": "tsx tools/verify/original.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

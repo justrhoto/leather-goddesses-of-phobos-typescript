@@ -15,16 +15,29 @@ createGame({ write: () => true, read: () => null }, 1);
 const dir = process.env.ZAP_DIR!;
 const zap = fs.readFileSync(`${dir}/x1dat.zap`, "latin1").replace(/\r/g, "");
 const strs = new Map<string, string>();
-for (const m of fs.readFileSync(`${dir}/x1str.zap`, "latin1").replace(/\r/g, "").matchAll(/\.GSTR (STR\?\d+),"((?:[^"\n]|"")*)"$/gm)) {
-  strs.set(m[1], m[2].replace(/""/g, '"'));
+for (const m of fs.readFileSync(`${dir}/x1str.zap`, "latin1").replace(/\r/g, "").matchAll(/\.GSTR (STR\?\d+),"((?:[^"]|"")*)"$/gm)) {
+  strs.set(m[1], m[2].replace(/""/g, '"')); // a line break inside a string is a newline
 }
 
 const flagNum = new Map<string, number>();
 for (const [k, v] of Object.entries(world)) if (/BIT$|^INVISIBLE$/.test(k) && typeof v === "number") flagNum.set(k, v);
 const propName = new Map<number, string>(Object.entries(P).map(([k, v]) => [v, k.replace(/_/g, "-")]));
 
+/**
+ * Expected differences: the release was compiled from an earlier version of
+ * these objects than the one in the source (see PORTING.md).
+ */
+const KNOWN = [
+  "SCRAP-OF-PAPER: missing property TEXT", // release 59 printed the matrix from TEXT;
+  "SCRAP-OF-PAPER: extra property ACTION", // the source prints it in SCRAP-OF-PAPER-F
+];
+let known = 0;
 let problems = 0;
 const report = (msg: string) => {
+  if (KNOWN.includes(msg)) {
+    known++;
+    return;
+  }
   problems++;
   if (problems < 80) console.log(msg);
 };
@@ -124,4 +137,4 @@ function sameValues(port: string[], orig: string[], pname: string): boolean {
   return true;
 }
 
-console.log(`objects ${allObjects.length - 1}, problems ${problems}`);
+console.log(`objects ${allObjects.length - 1}, known differences ${known}, problems ${problems}`);
