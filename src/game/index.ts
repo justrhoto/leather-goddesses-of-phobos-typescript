@@ -15,7 +15,9 @@ import { buildObjects, type Direction } from "../engine/define.ts";
 import { linkAdjacentTables } from "../engine/table.ts";
 import { asObj, propDefaults } from "../engine/object.ts";
 import { isFixedPitch, setGlobalsForValue, setTellHooks } from "../engine/runtime.ts";
-import { registerGlobals, registerRoutines, restoreSnapshot, takeSnapshot, type Snapshot } from "../engine/state.ts";
+import {
+  registerGlobals, registerRoutines, restoreSnapshot, setBaselineSnapshot, takeSnapshot, type Snapshot,
+} from "../engine/state.ts";
 import { Rng } from "../engine/rng.ts";
 import { Machine, type GameHooks, type SaveStorage } from "../engine/machine.ts";
 
@@ -47,6 +49,7 @@ function initWorld(): void {
   // read past the end of P-INBUF (when handed a stray pointer) into the others.
   linkAdjacentTables(parser.P_INBUF, parser.RESERVE_INBUF, parser.OOPS_INBUF);
   pristine = takeSnapshot(new Rng(0));
+  setBaselineSnapshot(pristine);
 }
 
 const hooks: GameHooks = {

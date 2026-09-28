@@ -88,6 +88,39 @@ export function globalCheck(tbl: any): any {
     ],
   },
 
+  "V-FILL": {
+    comment: `/**
+ * V-FILL, as the original compiler actually built it. The source reads
+ *   <AND <OR <FSET? ,PRSO ,CONTBIT>
+ *            <AND <PRSO? ,STAIN ,CREAM> <FSET? ,STAIN ,MUNGBIT>>>
+ *        <OR <PRSI? ,WATER> <GLOBAL-IN? ,WATER ,HERE>>>
+ * but ZILCH sent the failure of <PRSO? ,STAIN ,CREAM> to the "OR succeeded"
+ * branch, so in the released game the first test only fails for the cream or
+ * stain before the stain is munged. (This is the only place the source uses
+ * that shape of expression.)
+ */`,
+    code: `
+export function vFill(): any {
+  const fillable = hasFlag(G.prso, CONTBIT) || !prsoIs(STAIN, CREAM) || hasFlag(STAIN, MUNGBIT);
+  if (fillable && (prsiIs(WATER) || isGlobalIn(WATER, G.here))) {
+    return wastes();
+  } else if (!G.prsi) {
+    tell(THERES_NOTHING, "to fill it with.\\n");
+    return true;
+  } else {
+    return impossibles();
+  }
+}`,
+    imports: [
+      { module: RT, name: "hasFlag" }, { module: RT, name: "tell" }, { module: W, name: "G" },
+      { module: W, name: "CONTBIT" }, { module: W, name: "MUNGBIT" }, { module: W, name: "STAIN" },
+      { module: W, name: "CREAM" }, { module: W, name: "WATER" }, { module: W, name: "THERES_NOTHING" },
+      { module: W, name: "prsoIs" }, { module: W, name: "prsiIs" },
+      { module: "./verbs.ts", name: "isGlobalIn" }, { module: "./verbs.ts", name: "wastes" },
+      { module: "./verbs.ts", name: "impossibles" },
+    ],
+  },
+
   "CLEAR-SCREEN": {
     comment: "/** CLEAR-SCREEN: the original scrolled 24 blank lines; the browser clears the story view. */",
     code: `

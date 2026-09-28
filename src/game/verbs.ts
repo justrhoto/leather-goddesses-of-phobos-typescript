@@ -1236,8 +1236,19 @@ export function vFeed(): any {
   }
 }
 
+/**
+ * V-FILL, as the original compiler actually built it. The source reads
+ *   <AND <OR <FSET? ,PRSO ,CONTBIT>
+ *            <AND <PRSO? ,STAIN ,CREAM> <FSET? ,STAIN ,MUNGBIT>>>
+ *        <OR <PRSI? ,WATER> <GLOBAL-IN? ,WATER ,HERE>>>
+ * but ZILCH sent the failure of <PRSO? ,STAIN ,CREAM> to the "OR succeeded"
+ * branch, so in the released game the first test only fails for the cream or
+ * stain before the stain is munged. (This is the only place the source uses
+ * that shape of expression.)
+ */
 export function vFill(): any {
-  if ((hasFlag(G.prso, CONTBIT) || prsoIs(STAIN, CREAM) && hasFlag(STAIN, MUNGBIT)) && (prsiIs(WATER) || isGlobalIn(WATER, G.here))) {
+  const fillable = hasFlag(G.prso, CONTBIT) || !prsoIs(STAIN, CREAM) || hasFlag(STAIN, MUNGBIT);
+  if (fillable && (prsiIs(WATER) || isGlobalIn(WATER, G.here))) {
     return wastes();
   } else if (!G.prsi) {
     tell(THERES_NOTHING, "to fill it with.\n");

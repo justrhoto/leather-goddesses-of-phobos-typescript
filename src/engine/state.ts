@@ -118,34 +118,63 @@ function decodeValue(v: any): any {
   throw new Error("bad saved value");
 }
 
+/**
+ * A snapshot as JSON. Only table buffers and object names that differ from
+ * the freshly built world are stored, which keeps saves small.
+ */
 export interface EncodedSnapshot {
   objs: number[];
-  descs: string[];
-  bufs: [any[], number[]][];
+  descs: Record<number, string>;
+  bufs: Record<number, [any[], number[]]>;
   g: Record<string, any>;
   rng: number[];
 }
 
+let baseline: Snapshot | null = null;
+
+/** Records the freshly built world, which encoded snapshots are relative to. */
+export function setBaselineSnapshot(s: Snapshot): void {
+  baseline = s;
+}
+
+function sameBuffer(a: { v: any[]; k: Uint8Array }, b: { v: any[]; k: Uint8Array }): boolean {
+  if (a.v.length !== b.v.length) return false;
+  for (let i = 0; i < a.v.length; i++) {
+    if (a.k[i] !== b.k[i]) return false;
+    const x = a.v[i];
+    const y = b.v[i];
+    if (x === y) continue;
+    if (x instanceof Table && y instanceof Table && x.buf === y.buf && x.off === y.off) continue;
+    if (x instanceof GlobalRef && y instanceof GlobalRef && x.name === y.name) continue;
+    return false;
+  }
+  return true;
+}
+
 export function encodeSnapshot(s: Snapshot): EncodedSnapshot {
+  if (!baseline) throw new Error("no baseline snapshot");
   const g: Record<string, any> = {};
   for (const [k, v] of Object.entries(s.g)) g[k] = encodeValue(v);
-  return {
-    objs: [...s.objs],
-    descs: s.descs,
-    bufs: s.bufs.map((b) => [b.v.map(encodeValue), [...b.k]]),
-    g,
-    rng: s.rng,
-  };
+  const bufs: EncodedSnapshot["bufs"] = {};
+  s.bufs.forEach((b, i) => {
+    if (!sameBuffer(b, baseline!.bufs[i])) bufs[i] = [b.v.map(encodeValue), [...b.k]];
+  });
+  const descs: Record<number, string> = {};
+  s.descs.forEach((d, i) => {
+    if (d !== baseline!.descs[i]) descs[i] = d;
+  });
+  return { objs: [...s.objs], descs, bufs, g, rng: s.rng };
 }
 
 export function decodeSnapshot(e: EncodedSnapshot): Snapshot {
+  if (!baseline) throw new Error("no baseline snapshot");
   const g: Record<string, any> = {};
   for (const [k, v] of Object.entries(e.g)) g[k] = decodeValue(v);
-  return {
-    objs: Int32Array.from(e.objs),
-    descs: e.descs,
-    bufs: e.bufs.map(([v, k]) => ({ v: v.map(decodeValue), k: Uint8Array.from(k) })),
-    g,
-    rng: e.rng,
-  };
+  const descs = baseline.descs.slice();
+  for (const [i, d] of Object.entries(e.descs)) descs[Number(i)] = d;
+  const bufs = baseline.bufs.map((b, i) => {
+    const enc = e.bufs[i];
+    return enc ? { v: enc[0].map(decodeValue), k: Uint8Array.from(enc[1]) } : { v: b.v.slice(), k: b.k.slice() };
+  });
+  return { objs: Int32Array.from(e.objs), descs, bufs, g, rng: e.rng };
 }

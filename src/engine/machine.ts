@@ -46,6 +46,10 @@ export interface SavedGame {
   score: number;
   moves: number;
   savedAt: string;
+  /** The next turn id, so ids stay unique across sessions. */
+  nextId: number;
+  /** The id of the turn the snapshot was taken at. */
+  checkpointId: number;
 }
 
 export interface SaveStorage {
@@ -81,7 +85,7 @@ class RestoreSignal {
   constructor(readonly saved: SavedGame) {}
 }
 
-export const BUILD_VERSION = "lgop-port-1";
+export const BUILD_VERSION = "lgop-port-4";
 
 let current: Machine | null = null;
 
@@ -282,7 +286,9 @@ export class Machine {
       } catch (e) {
         if (e instanceof NeedInput) return this.result(e.kind);
         if (e instanceof RestartSignal) {
-          this.resetToInitial();
+          // Like the Z-machine's RESTART: the world starts over but the random
+          // number generator carries on from where it was.
+          this.resetToInitial(this.rng.getState());
           this.out.push({ type: "clear" });
           continue;
         }
@@ -307,8 +313,10 @@ export class Machine {
     return { events, waiting, ended: this.ended };
   }
 
-  private resetToInitial(): void {
-    this.checkpoint = this.initial;
+  private resetToInitial(rngState?: number[]): void {
+    this.checkpoint = rngState
+      ? { id: this.nextId++, snapshot: { ...this.initial.snapshot, rng: rngState }, entry: "go" }
+      : this.initial;
     this.pending = [];
     this.shown = 0;
     this.history = [];
@@ -328,11 +336,15 @@ export class Machine {
       score: st.score,
       moves: st.moves,
       savedAt: new Date().toISOString(),
+      nextId: this.nextId,
+      checkpointId: cp.id,
     };
   }
 
   private applySave(saved: SavedGame, viaSaveVerb = true): void {
-    this.checkpoint = { id: this.nextId++, snapshot: decodeSnapshot(saved.snapshot), entry: saved.entry };
+    this.nextId = Math.max(this.nextId, saved.nextId ?? 0);
+    const id = viaSaveVerb ? this.nextId++ : (saved.checkpointId ?? this.nextId++);
+    this.checkpoint = { id, snapshot: decodeSnapshot(saved.snapshot), entry: saved.entry };
     this.pending = [...saved.inputs];
     this.shown = saved.shown;
     this.history = [];
