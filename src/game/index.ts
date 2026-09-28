@@ -12,6 +12,7 @@ import * as spaceship from "./spaceship.ts";
 import * as phobos from "./phobos.ts";
 import "./syntax.ts";
 import { buildObjects, type Direction } from "../engine/define.ts";
+import { linkAdjacentTables } from "../engine/table.ts";
 import { asObj, propDefaults } from "../engine/object.ts";
 import { isFixedPitch, setGlobalsForValue, setTellHooks } from "../engine/runtime.ts";
 import { registerGlobals, registerRoutines, restoreSnapshot, takeSnapshot, type Snapshot } from "../engine/state.ts";
@@ -42,6 +43,9 @@ function initWorld(): void {
   registerGlobals(G as unknown as Record<string, any>);
   setGlobalsForValue(G as unknown as Record<string, any>);
   setTellHooks({ D: misc.dprint, A: misc.aprint, T: misc.tprint, AR: misc.arprint, TR: misc.trprint });
+  // In the original these input buffers were adjacent in memory, and NUMBER? can
+  // read past the end of P-INBUF (when handed a stray pointer) into the others.
+  linkAdjacentTables(parser.P_INBUF, parser.RESERVE_INBUF, parser.OOPS_INBUF);
   pristine = takeSnapshot(new Rng(0));
 }
 

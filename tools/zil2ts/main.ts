@@ -496,7 +496,9 @@ function emitWorld(): string {
   const wordsSorted = [...vocab.words.values()].sort((a, b) => (a.key < b.key ? -1 : 1));
   for (const w of wordsSorted) {
     const [ps, v1, v2] = wordBytes(vocab, w);
-    out.push(`defineWord(${JSON.stringify(w.text)}, 0b${ps.toString(2).padStart(8, "0")}, ${v1}, ${v2});`);
+    const addr = (layout as any).wordAddresses[w.key];
+    if (addr === undefined) throw new Error(`no original address for word ${w.text}`);
+    out.push(`defineWord(${JSON.stringify(w.text)}, 0b${ps.toString(2).padStart(8, "0")}, ${v1}, ${v2}, 0x${addr.toString(16)});`);
   }
   const refs = [...wordRefs].sort();
   out.push(`\n/** Dictionary words referred to by the code (,W?FOO). */\nexport const W = {\n${refs.map((r) => `  ${recKey(r)}: word(${JSON.stringify((SPECIAL_WORDS[r] ?? r).toLowerCase())}),`).join("\n")}\n} as const;`);

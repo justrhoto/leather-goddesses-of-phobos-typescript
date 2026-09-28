@@ -15,6 +15,8 @@ const WORD_LO = 2; // second byte of a word value
 export const allBuffers: TableBuf[] = [];
 
 export class TableBuf {
+  /** The table that followed this one in the original's memory (for reads past the end). */
+  next: TableBuf | null = null;
   readonly vals: any[];
   readonly kinds: Uint8Array;
   readonly id: number;
@@ -44,6 +46,7 @@ export class TableBuf {
   }
 
   getByte(off: number): any {
+    if (off >= this.size && this.next) return this.next.getByte(off - this.size);
     this.check(off, 1);
     return this.byteValue(off);
   }
@@ -83,6 +86,9 @@ export class TableBuf {
 
 function toWordNumber(v: any): number {
   if (typeof v === "number") return v & 0xffff;
+  // Values that were numbers in the original: dictionary words (their address) and objects (their number).
+  if (v && typeof v === "object" && typeof v.address === "number") return v.address;
+  if (v && typeof v === "object" && typeof v.num === "number") return v.num;
   if (v === false || v === null || v === undefined) return 0;
   if (v === true) return 1;
   throw new Error(`cannot take bytes of a non-numeric table value: ${String(v)}`);
@@ -100,6 +106,14 @@ export class Table {
   toString(): string {
     return `<table ${this.buf.label || this.buf.id}+${this.off}>`;
   }
+}
+
+/**
+ * Records that tables were laid out one after another in the original, so a
+ * byte read that runs off the end of one continues into the next.
+ */
+export function linkAdjacentTables(...tables: Table[]): void {
+  for (let i = 0; i + 1 < tables.length; i++) tables[i].buf.next = tables[i + 1].buf;
 }
 
 export function sameTable(a: unknown, b: unknown): boolean {

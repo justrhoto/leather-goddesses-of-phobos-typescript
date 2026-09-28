@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Leather Goddesses of Phobos</title>
+    <meta name="description" content="Infocom's 1986 interactive fiction, ported to TypeScript for the browser." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='14' cy='16' r='10' fill='%23e0243a'/%3E%3Ccircle cx='18' cy='16' r='10' fill='%231fb3c8' fill-opacity='.8'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Limelight&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/ui/styles.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <h1 class="title" aria-label="Leather Goddesses of Phobos">
+        <span class="title-text" data-text="Leather Goddesses of Phobos">Leather Goddesses of Phobos</span>
+      </h1>
+      <p class="status" aria-live="polite">
+        <span class="status-place" id="place"></span>
+        <span class="status-numbers"><span id="score"></span><span id="moves"></span></span>
+      </p>
+      <button class="icon-button" id="menu-button" type="button" aria-haspopup="dialog" aria-controls="menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+        <span class="visually-hidden">Game menu</span>
+      </button>
+    </header>
+
+    <main class="story" id="story" aria-live="polite" aria-atomic="false"></main>
+
+    <footer class="command">
+      <div class="chips" id="chips" aria-label="Quick replies"></div>
+      <form class="command-line" id="command-form" autocomplete="off">
+        <label class="prompt-glyph" for="command-input">&gt;</label>
+        <input
+          id="command-input"
+          name="command"
+          type="text"
+          spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
+          enterkeyhint="send"
+          aria-label="Your command"
+        />
+        <button type="button" class="text-button" id="undo-button" title="Undo the last turn (Ctrl+Z)">Undo</button>
+        <button type="submit" class="send-button">Enter</button>
+      </form>
+    </footer>
+
+    <dialog class="sheet" id="menu" aria-labelledby="menu-title">
+      <form method="dialog" class="sheet-head">
+        <h2 id="menu-title">Game</h2>
+        <button class="icon-button" value="close" aria-label="Close the menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </form>
+
+      <section class="sheet-section" aria-labelledby="saves-title">
+        <h3 id="saves-title">Saved games</h3>
+        <form class="save-new" id="save-form">
+          <input id="save-name" type="text" placeholder="Name this save" aria-label="Save name" maxlength="40" />
+          <button type="submit" class="text-button strong">Save here</button>
+        </form>
+        <ul class="save-list" id="save-list"></ul>
+      </section>
+
+      <section class="sheet-section" aria-labelledby="sniff-title">
+        <h3 id="sniff-title">Scratch 'n' Sniff card</h3>
+        <p class="note">The game will tell you when to scratch a spot.</p>
+        <ol class="sniff-card" id="sniff-card"></ol>
+      </section>
+
+      <section class="sheet-section" aria-labelledby="view-title">
+        <h3 id="view-title">Reading</h3>
+        <div class="setting">
+          <span id="size-label">Text size</span>
+          <div class="segmented" role="group" aria-labelledby="size-label" id="size-group">
+            <button type="button" data-size="s">Small</button>
+            <button type="button" data-size="m">Medium</button>
+            <button type="button" data-size="l">Large</button>
+          </div>
+        </div>
+        <div class="setting">
+          <span id="theme-label">Theme</span>
+          <div class="segmented" role="group" aria-labelledby="theme-label" id="theme-group">
+            <button type="button" data-theme-choice="auto">Auto</button>
+            <button type="button" data-theme-choice="light">Paper</button>
+            <button type="button" data-theme-choice="dark">Space</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="sheet-section actions">
+        <button type="button" class="text-button" id="download-button">Download transcript</button>
+        <button type="button" class="text-button danger" id="restart-button">Start over</button>
+      </section>
+
+      <section class="sheet-section about">
+        <h3>How to play</h3>
+        <p>
+          Type what you want to do in plain English: <kbd>north</kbd>, <kbd>take the flashlight</kbd>,
+          <kbd>put jar in basket</kbd>. <kbd>look</kbd> describes where you are, <kbd>inventory</kbd> lists what
+          you carry, and <kbd>again</kbd> repeats your last command. Choose how racy the story is with
+          <kbd>tame</kbd>, <kbd>suggestive</kbd> or <kbd>lewd</kbd>.
+        </p>
+        <p class="credit">
+          Leather Goddesses of Phobos &copy; 1986 Infocom, Inc., written by Steve Meretzky. This is a TypeScript
+          port of the original ZIL source.
+        </p>
+      </section>
+    </dialog>
+
+    <dialog class="modal" id="slot-dialog" aria-labelledby="slot-title">
+      <form method="dialog" id="slot-form">
+        <h2 id="slot-title">Save the game</h2>
+        <p class="note" id="slot-note"></p>
+        <input id="slot-input" type="text" maxlength="40" aria-labelledby="slot-title" />
+        <ul class="save-list compact" id="slot-list"></ul>
+        <div class="modal-actions">
+          <button type="button" class="text-button" id="slot-cancel">Cancel</button>
+          <button type="submit" class="text-button strong" id="slot-ok">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal sniff-modal" id="sniff-dialog" aria-labelledby="sniff-now-title">
+      <form method="dialog">
+        <h2 id="sniff-now-title">Scratch spot <span id="sniff-number"></span></h2>
+        <button type="button" class="sniff-spot big" id="sniff-spot" aria-describedby="sniff-hint">
+          <span class="sniff-scent" id="sniff-scent"></span>
+        </button>
+        <p class="note" id="sniff-hint">Scratch it, then carry on.</p>
+        <div class="modal-actions">
+          <button type="submit" class="text-button strong" id="sniff-continue">Continue</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/src/ui/main.ts"></script>
+  </body>
+</html>

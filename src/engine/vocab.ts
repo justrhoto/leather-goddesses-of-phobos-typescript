@@ -12,6 +12,8 @@ export class Word {
     readonly ps: number,
     readonly v1: number,
     readonly v2: number,
+    /** Where the original story file stored this word (visible to code that reads its bytes). */
+    readonly address: number,
   ) {}
 
   getByte(off: number): number {
@@ -28,10 +30,10 @@ export class Word {
 
 export const dictionary = new Map<string, Word>();
 
-/** Adds a word: [text, ps, v1, v2]. */
-export function defineWord(text: string, ps: number, v1: number, v2: number): Word {
+/** Adds a word: text, parts-of-speech byte, value 1, value 2, original address. */
+export function defineWord(text: string, ps: number, v1: number, v2: number, address: number): Word {
   const key = dictKey(text);
-  const w = new Word(key, dictText(text), ps, v1, v2);
+  const w = new Word(key, dictText(text), ps, v1, v2, address);
   dictionary.set(key, w);
   return w;
 }
