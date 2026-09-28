@@ -8,8 +8,8 @@ import {
   blocked, defineObject, per, to, toIfOpen,
 } from "../engine/define.ts";
 import {
-  A, D, EMPTY, PD, T, TR, clearFlag, crlf, eq, first, get, getp, hasFlag, isIn, loc, move, printd, put,
-  putp, remove, setFlag, tell,
+  A, D, PD, T, TR, clearFlag, crlf, eq, first, get, getp, hasFlag, isIn, loc, move, printd, put, putp,
+  remove, setFlag, tell,
 } from "../engine/runtime.ts";
 import {
   ltable, table,
@@ -1530,7 +1530,8 @@ defineObject(SIDEKICKS_BODY, 157, {
   adjective: ["TRENT", "TIFFAN", "TIFF'S"],
   flags: [NARTICLEBIT, CONTBIT, ACTORBIT, SEARCHBIT, OPENBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "Stepping off the cliff would mean a fatal plunge to the jungle below.",
     [P.GENERIC]: genericSidekickF,
     [P.ACTION]: sidekicksBodyF,
   },

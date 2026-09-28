@@ -15,6 +15,8 @@ export interface WalkResult {
   moves: number;
   ended: boolean;
   failure?: string;
+  /** Every command actually sent, in order. */
+  commands: string[];
 }
 
 function text(events: OutputEvent[]): string {
@@ -38,7 +40,9 @@ export function runWalkthrough(steps: Step[], seed = 1): WalkResult {
     for (const e of events) if (e.type === "status") ({ score, moves } = e);
   };
   track(r.events);
+  const commands: string[] = [];
   const send = (cmd: string) => {
+    commands.push(cmd);
     r = game.send(cmd);
     track(r.events);
     last = text(r.events);
@@ -46,7 +50,7 @@ export function runWalkthrough(steps: Step[], seed = 1): WalkResult {
     return last;
   };
   for (const [i, step] of steps.entries()) {
-    const fail = (msg: string): WalkResult => ({ transcript, score, moves, ended: r.ended, failure: `step ${i}: ${msg}` });
+    const fail = (msg: string): WalkResult => ({ transcript, score, moves, ended: r.ended, failure: `step ${i}: ${msg}`, commands });
     if (r.ended) return fail("the game ended early");
     if (typeof step === "string") send(step);
     else if ("until" in step) {
@@ -64,5 +68,5 @@ export function runWalkthrough(steps: Step[], seed = 1): WalkResult {
       if (!step.expect.test(send(step.cmd))) return fail(`"${step.cmd}" did not produce ${step.expect}`);
     } else if (!step.expect.test(last)) return fail(`expected ${step.expect}`);
   }
-  return { transcript, score, moves, ended: r.ended };
+  return { transcript, score, moves, ended: r.ended, commands };
 }

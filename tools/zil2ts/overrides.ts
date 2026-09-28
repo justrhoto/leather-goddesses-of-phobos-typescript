@@ -108,3 +108,29 @@ export const SOURCE_FIXES: Record<string, { use: string; why: string }> = {
     why: "OBJECT is undefined in the source; ZILCH assembled it as the object table's address, so the original performed UNDRESS on a garbage object number. PRSO is the evident intent.",
   },
 };
+
+/**
+ * The original compiler assembled an empty string ("") as zero bytes, so its
+ * address was that of whichever string came next in the story file. Objects
+ * whose placeholder SDESC/ODOR was "" therefore started out with an unrelated
+ * text, which the original shows if one is printed before the game replaces
+ * it (e.g. "You're not holding the man."). These are the texts in release 59.
+ */
+export const COMPILED_EMPTY_STRINGS: Record<string, string> = {
+  "THORBAST-SWORD SDESC": "get past the monster",
+  "SIDEKICKS-BODY SDESC": "Stepping off the cliff would mean a fatal plunge to the jungle below.",
+  "SIDEKICK SDESC": "A crumpled paper lies discarded in the corner. There seems to be some writing on it.",
+  "PHOTO SDESC": "phoo",
+  "SPLATTERED-SIDEKICK SDESC": "sword",
+  "MAN-WOMAN SDESC": "man",
+  "THORBAST SDESC": "get past the monster",
+  "SULTAN SDESC": "you answer incorrectly",
+  "POWER-TRANSMITTER SDESC": "slight",
+  "RUINED-CASTLE-1 SDESC":
+    "Princess Theta stands demurely by her father's throne, buried up to her thighs in forty-five degree angles.",
+  "RUINED-CASTLE-2 SDESC": "east",
+  "RUINED-CASTLE-3 SDESC":
+    "This dock, which extends north into a broad canal, is crafted of fine woods from across the solar system: hickory wood from the forests of Earth, and dickory wood from the jungles of Venus. A path leads south.",
+  "YOUNG-WOMAN SDESC": "get past the monster",
+  "HAREM ODOR": " forewarned, the guards reduce you to three dots.",
+};

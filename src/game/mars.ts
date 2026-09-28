@@ -117,7 +117,8 @@ defineObject(RUINED_CASTLE_1, 53, {
     IN: to(THRONE_ROOM),
   },
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "Princess Theta stands demurely by her father's throne, buried up to her thighs in forty-five degree angles.",
     [P.ACTION]: ruinedCastle1F,
   },
 });
@@ -406,7 +407,8 @@ defineObject(RUINED_CASTLE_2, 59, {
     EAST: to(MARTIAN_DESSERT),
   },
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "east",
     [P.ACTION]: ruinedCastle2F,
   },
 });
@@ -636,7 +638,8 @@ defineObject(RUINED_CASTLE_3, 62, {
     NW: to(HICKORY_AND_DICKORY_DOCK),
   },
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "This dock, which extends north into a broad canal, is crafted of fine woods from across the solar system: hickory wood from the forests of Earth, and dickory wood from the jungles of Venus. A path leads south.",
     [P.HOLE_DESTINATION]: BASEMENT,
     [P.ACTION]: ruinedCastle3F,
   },
@@ -1484,7 +1487,8 @@ defineObject(POWER_TRANSMITTER, 73, {
   adjective: ["LARGE", "METAL", "METALLIC", "POWER", "LOOMING", "RUSTED", "MARTIAN"],
   flags: [NDESCBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "slight",
     [P.GENERIC]: genericMachineF,
     [P.ACTION]: powerTransmitterF,
   },
@@ -2633,7 +2637,8 @@ defineObject(SULTAN, 100, {
   synonym: ["SULTAN"],
   flags: [ACTORBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "you answer incorrectly",
     [P.DESCFCN]: sultanF,
     [P.ACTION]: sultanF,
   },
@@ -2811,7 +2816,8 @@ defineObject(HAREM, 101, {
     OUT: to(AUDIENCE_CHAMBER),
   },
   props: {
-    [P.ODOR]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.ODOR]: " forewarned, the guards reduce you to three dots.",
     [P.ODOR_NUMBER]: 4,
     [P.ACTION]: haremF,
   },

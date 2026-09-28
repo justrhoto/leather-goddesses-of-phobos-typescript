@@ -12,7 +12,7 @@ import {
   buildVocabulary, wordBytes, pseudoTriples, PROPERTY_NUMBERS, PS, P1, SPECIAL_WORDS, type Vocabulary,
 } from "./vocab.ts";
 import { Imports, RoutineEmitter, RUNTIME, type SymbolTable, type Where } from "./emit.ts";
-import { OVERRIDES } from "./overrides.ts";
+import { OVERRIDES, COMPILED_EMPTY_STRINGS } from "./overrides.ts";
 import { dictKey } from "../../src/engine/zchars.ts";
 import layout from "./original-layout.json" with { type: "json" };
 
@@ -328,7 +328,10 @@ function objectSpec(o: ObjectDef, imports: Imports): string {
         if (num === undefined) throw new Error(`${where}: unknown property ${name}`);
         if (rest.length !== 1) throw new Error(`${where}: property ${name} with ${rest.length} values`);
         add({ module: WORLD, name: "P" });
-        props.push(`[P${member(name)}]: ${dataExpr(rest[0], imports, "", where)}`);
+        const compiled = COMPILED_EMPTY_STRINGS[`${o.name} ${name}`];
+        if (compiled !== undefined && rest[0].kind === "string" && rest[0].value === "") {
+          props.push(`// "" in the source, which the original compiled as this unrelated text:\n    [P${member(name)}]: ${JSON.stringify(compiled)}`);
+        } else props.push(`[P${member(name)}]: ${dataExpr(rest[0], imports, "", where)}`);
       }
     }
   }

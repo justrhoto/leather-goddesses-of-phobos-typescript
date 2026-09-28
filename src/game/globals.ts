@@ -8,8 +8,8 @@ import {
   defineObject, to,
 } from "../engine/define.ts";
 import {
-  A, AR, D, EMPTY, PD, T, TR, apply, clearFlag, crlf, eq, first, get, getp, hasFlag, isIn, loc, move,
-  next, printb, printn, prob, putp, random, read, remove, setFlag, tell,
+  A, AR, D, PD, T, TR, apply, clearFlag, crlf, eq, first, get, getp, hasFlag, isIn, loc, move, next,
+  printb, printn, prob, putp, random, read, remove, setFlag, tell,
 } from "../engine/runtime.ts";
 import {
   bedroomExitF, plummetToPavement,
@@ -244,7 +244,8 @@ defineObject(MAN_WOMAN, 11, {
   in: GLOBAL_OBJECTS,
   synonym: ["MAN", "WOMAN"],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "man",
     [P.ACTION]: manWomanF,
   },
 });

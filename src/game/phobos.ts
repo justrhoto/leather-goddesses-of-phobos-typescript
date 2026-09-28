@@ -8,8 +8,8 @@ import {
   blocked, defineObject, per, to, toIf, toIfOpen,
 } from "../engine/define.ts";
 import {
-  A, D, EMPTY, HEADER, PD, T, TR, clearFlag, crlf, eq, first, get, getp, hasFlag, isIn, loc, move,
-  printd, prob, put, putp, remove, setFlag, tell,
+  A, D, HEADER, PD, T, TR, clearFlag, crlf, eq, first, get, getp, hasFlag, isIn, loc, move, printd,
+  prob, put, putp, remove, setFlag, tell,
 } from "../engine/runtime.ts";
 import {
   table,
@@ -426,7 +426,8 @@ defineObject(SIDEKICK, 210, {
   adjective: ["TRENT", "TIFFAN", "TIFF'S"],
   flags: [NARTICLEBIT, ACTORBIT, CONTBIT, OPENBIT, SEARCHBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "A crumpled paper lies discarded in the corner. There seems to be some writing on it.",
     [P.DESCFCN]: sidekickF,
     [P.GENERIC]: genericSidekickF,
     [P.ACTION]: sidekickF,

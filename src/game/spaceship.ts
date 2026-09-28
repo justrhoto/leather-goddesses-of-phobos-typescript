@@ -8,8 +8,7 @@ import {
   defineObject, per, to, toIfOpen,
 } from "../engine/define.ts";
 import {
-  A, AR, D, EMPTY, PD, T, TR, clearFlag, crlf, eq, hasFlag, isIn, move, prob, putp, remove, setFlag,
-  tell,
+  A, AR, D, PD, T, TR, clearFlag, crlf, eq, hasFlag, isIn, move, prob, putp, remove, setFlag, tell,
 } from "../engine/runtime.ts";
 import {
   andSidekick, cantSee, doFirst, heShe, herHim, herHis, himHer, hisHer, incrementScore, isInSpace,
@@ -96,7 +95,8 @@ defineObject(SPLATTERED_SIDEKICK, 183, {
   adjective: ["SMALL", "SPLATTERED"],
   flags: [NDESCBIT, NARTICLEBIT, PLURALBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "sword",
     [P.GENERIC]: genericSidekickF,
     [P.ACTION]: splatteredSidekickF,
   },
@@ -734,7 +734,8 @@ defineObject(THORBAST, 194, {
   adjective: ["CHIEF", "SHADOWY"],
   flags: [ACTORBIT, CONTBIT, SEARCHBIT, OPENBIT, NARTICLEBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "get past the monster",
     [P.DESCFCN]: thorbastF,
     [P.ACTION]: thorbastF,
   },
@@ -883,7 +884,8 @@ defineObject(THORBAST_SWORD, 195, {
   adjective: ["THORBAST", "ASSASSIN", "HIS", "HER", "LONG", "POINTED"],
   flags: [NARTICLEBIT, NDESCBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "get past the monster",
     [P.ACTION]: thorbastSwordF,
   },
 });
@@ -901,7 +903,8 @@ defineObject(YOUNG_WOMAN, 196, {
   adjective: ["YOUNG"],
   flags: [ACTORBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "get past the monster",
     [P.DESCFCN]: youngWomanF,
     [P.ACTION]: youngWomanF,
   },
@@ -1205,7 +1208,8 @@ defineObject(PHOTO, 200, {
   adjective: ["JEAN", "DOUGLAS", "PHOO", "ADDRESS"],
   flags: [TAKEBIT, BURNBIT, READBIT],
   props: {
-    [P.SDESC]: EMPTY,
+    // "" in the source, which the original compiled as this unrelated text:
+    [P.SDESC]: "phoo",
     [P.NO_T_DESC]: "phoo",
     [P.SIZE]: 3,
     [P.ACTION]: photoF,
