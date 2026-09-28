@@ -222,9 +222,12 @@ npm run verify:original -- file cmds.txt # your own commands, one per line
   syntaxes: every verb and syntax form, random nouns, adjectives, `all`,
   `it`, `all but`, directions, `again`, `yes`/`no`. `SAVE` and `RESTORE` are
   left out because the oracle has no file system. 600 runs (fuzzer seed
-  12345) and 2000 runs (fuzzer seed 777) are identical to the original,
-  except that three of the 2000 happened to `uncover` or `unplug` Trent: the
-  `V-UNCOVER` case above.
+  12345) are all identical to the original. Of 2000 runs with fuzzer seed
+  777, 1999 are identical. The remaining one (run 505) uncovers a character,
+  the `V-UNCOVER` case above; later in that run a command using `him` is
+  answered differently too. With the uncover command removed, the run is
+  identical. That one garbage `PERFORM` in the original leaves effects the
+  port, which doesn't make it, can't reproduce.
 
 Differences found this way are how several of the release behaviours above
 came to light, among them `V-FILL`, `RESTART` and the scrap of paper.
